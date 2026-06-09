@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="MAIN" Id="{f1a2a55c-7bda-4ea2-86df-8acc4190387b}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	// Variables for lights and timers are created here
+	
+	gGreenlight : BOOL := FALSE;
+	yYellowlight : BOOL := FALSE;
+	rRedLight : BOOL := FALSE;
+	gGreenlighttimer : TON;
+	yYellowlighttimer : TON;
+	rRedlighttimer : TON;
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Code begins by setting a timer with 5 seconds and setting the end to start the following timer
+gGreenlighttimer(IN := NOT rRedlighttimer.Q, PT := T#5S);
+
+yYellowlighttimer(IN := gGreenlighttimer.Q, PT := T#2S);
+
+rRedlighttimer(IN := yYellowlighttimer.Q, PT := T#5S);
+
+gGreenlight := NOT gGreenlighttimer.Q AND gGreenlighttimer.IN;
+
+yYellowlight := NOT yYellowlighttimer.Q AND yYellowlighttimer.IN;
+
+rRedLight := NOT rRedlighttimer.Q AND rRedlighttimer.IN;
+// Loop restarts by reseting the start condition for the green timer which starts a universal reset for all timers]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="29" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="15" Count="7" />
+      <LineId Id="2" Count="0" />
+      <LineId Id="30" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
