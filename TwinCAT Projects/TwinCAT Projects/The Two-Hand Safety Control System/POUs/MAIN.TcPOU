@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="MAIN" Id="{db8bfc4a-b855-44fc-bdea-39219db874f6}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	// Creation of BOOL variables for button press
+	bLeftbutton : BOOL := FALSE;
+	bRightbutton: BOOL := FALSE;
+	bMachineOn: BOOL := FALSE;
+	
+	// Here the timer and lockout memory are created
+	tTimer: TON;
+	bLock: BOOL := FALSE;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Timer is created with start condtion being if only one button is pressed
+tTimer(IN:= bLeftbutton XOR bRightbutton, PT:=T#5S);
+
+//Lock enabled if timer is completed
+IF tTimer.Q THEN
+	bLock := TRUE;
+END_IF;
+
+// Conditional for when both buttons are pressed without Lockout memory being enabled.
+IF bLeftbutton AND bRightbutton AND NOT bLock THEN
+	bMachineOn := TRUE;
+END_IF;
+
+// Final conditional for disabling Lockout when both buttons are not pressed.
+IF NOT bLeftbutton AND NOT bRightbutton THEN
+	bLock := FALSE;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="58" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="60" Count="0" />
+      <LineId Id="59" Count="0" />
+      <LineId Id="42" Count="2" />
+      <LineId Id="61" Count="0" />
+      <LineId Id="28" Count="3" />
+      <LineId Id="63" Count="0" />
+      <LineId Id="62" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="45" Count="1" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
