@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="MAIN" Id="{81ce9aaf-6b63-44e6-9a46-06e3ba48373a}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	// BOOLS for Errors and Machine condition created here
+	bMachineOn: BOOL := TRUE;
+	bEStopPressed: BOOL := FALSE;
+	bMachineOverload: BOOL := FALSE;
+	bDoorOpen: BOOL := FALSE;
+	bMasterFault: BOOL := FALSE;
+	bReset: BOOL := FALSE;
+	bErrorPresent: BOOL := FALSE;
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// IF statement detecting if any errors are currently active and activating memory if condition is met.
+IF bEStopPressed OR bMachineOverload OR bDoorOpen THEN
+	bMasterFault := TRUE;
+	bErrorPresent:= TRUE;
+ELSE;
+	bErrorPresent := FALSE;
+END_IF;
+
+// Another If statement for activating reset, enabling only when no errors are present.
+IF bReset AND NOT bErrorPresent THEN
+	bMasterFault := FALSE;
+END_IF;
+
+//Master Fault Memory disabling machine if it is currently active and keeping the machine running otherwise.
+IF bMasterFault THEN
+	bMachineOn := FALSE;
+ELSE;
+	bMachineOn := TRUE;
+END_IF;]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="53" Count="0" />
+      <LineId Id="2" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="39" Count="1" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="55" Count="0" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="30" Count="2" />
+      <LineId Id="56" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="27" Count="1" />
+      <LineId Id="26" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
