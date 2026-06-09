@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="MAIN" Id="{be840c94-27f3-451b-a264-5caf577e0e52}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	// Variables established here, including Motor, Timer, and Output storage
+	bMotorRun: BOOL := TRUE;
+	
+	tMinuteTimer: TON;
+	
+	nTotalMinutes: INT := 0;
+	nTotalHours: INT := 0;
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// TImer detects if motor is currently running and timer isn't already completed
+tMinuteTimer(IN:= bMotorRun AND NOT tMinuteTimer.Q, PT:= T#5S);
+// INT for Minutes counts up everytime the timer is completed and resets at 60 for the hourly conversion
+// Ideally this could be applied to keep track of time in-between maintenance cycles.
+IF tMinuteTimer.Q THEN
+	nTotalMinutes := nTotalMinutes +1;
+	IF nTotalMinutes = 60 THEN
+		nTotalMinutes := 0;
+		nTotalHours := nTotalHours + 1;
+	END_IF;
+END_IF;]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="44" Count="0" />
+      <LineId Id="2" Count="0" />
+      <LineId Id="46" Count="1" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="22" Count="1" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="36" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
