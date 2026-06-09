@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="MAIN" Id="{83d9dde9-3524-4855-af7f-721d30e69b7f}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	// Here, the detector, reject arm, and memory for detection are created as BOOLs
+	bBadPartDetected: BOOL := FALSE;
+	bRejectArmEnabled: BOOL := FALSE;
+	bRejectMemory: BOOL := FALSE;
+	
+	// Timers to calculate when to enable the reject arm are made here.
+	tTravelTimer: TON;
+	tPushTimer: TON;
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//Detects if a faulty product is detected and saves a memory variable for it.
+IF bBadPartDetected THEN
+	bRejectMemory := TRUE;
+END_IF;
+
+// Timer is then enabled while setting an if statement to enable/disable the reject arm.
+tTravelTimer(IN:= bRejectMemory, PT := T#3S);
+tPushTimer(IN:= tTravelTimer.Q, PT:= T#1S);
+
+IF NOT tPushTimer.Q AND bRejectMemory AND tTravelTimer.Q THEN
+	bRejectArmEnabled := TRUE;
+ELSE;
+	bRejectArmEnabled := FALSE;
+END_IF;
+
+//When all timers are completed, both start conditions are set to false, reseting the cycle.
+IF tPushTimer.Q AND tTravelTimer.Q THEN
+	bBadPartDetected := FALSE;
+	bRejectMemory := FALSE;
+END_IF;]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="30" Count="0" />
+      <LineId Id="17" Count="2" />
+      <LineId Id="31" Count="1" />
+      <LineId Id="20" Count="1" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="22" Count="4" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="27" Count="2" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
