@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="MAIN" Id="{116e7d30-b956-4213-8d9a-f39d94a2d40c}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	// Simple establishing of core variables
+	bStartbutton : BOOL := FALSE;
+	bStopbutton : BOOL := FALSE;
+
+	bConveyoron : BOOL := FALSE;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// This is a simple code that starts and stops a virtual belt depending on which button is being pressed while resetting the button inputs after each signal.
+bConveyoron := (bStartbutton OR bConveyoron) AND NOT bStopbutton;
+IF bStartbutton := TRUE THEN
+	bStopbutton := FALSE;
+	bStartbutton := FALSE;
+END_IF;
+IF bStopbutton := TRUE THEN
+	bStopbutton := FALSE;
+	bStartbutton := FALSE;
+END_IF;]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="19" Count="0" />
+      <LineId Id="11" Count="7" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
