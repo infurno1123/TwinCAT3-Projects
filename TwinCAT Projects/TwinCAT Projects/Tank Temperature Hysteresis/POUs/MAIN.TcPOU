@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="MAIN" Id="{e30d083e-3da6-47ae-8de8-8e47e27af3a0}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	// Temp Sensor and Output variable created here.
+	nTankTemp: REAL := 25;
+	
+	bHeaterON: BOOL := FALSE;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Conditional IF statement detecting where Temperature is at
+IF nTankTemp < 40.0 THEN
+	bHeaterON := TRUE;
+ELSIF nTankTemp > 60.0THEN
+	bHeaterON := FALSE;
+END_IF;
+
+// Temperature changing in real time, being influenced by activation of heater
+IF bHeaterON THEN
+	nTankTemp := nTankTemp + 0.5;
+ELSE
+	nTankTemp := nTankTemp - 0.1;
+END_IF;]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="24" Count="0" />
+      <LineId Id="2" Count="0" />
+      <LineId Id="10" Count="1" />
+      <LineId Id="14" Count="1" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="19" Count="1" />
+      <LineId Id="22" Count="1" />
+      <LineId Id="21" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
