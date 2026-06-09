@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="MAIN" Id="{06295a7d-5590-4515-9abd-727d4b72425e}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	gGreenlight : BOOL := FALSE;
+	yYellowlight : BOOL := FALSE;
+	rRedLight : BOOL := FALSE;
+	gGreenlighttimer : TON;
+	yYellowlighttimer : TON;
+	rRedlighttimer : TON;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[gGreenlighttimer(IN := NOT rRedlighttimer.Q, PT := T#5S);
+
+yYellowlighttimer(IN := gGreenlighttimer.Q, PT := T#2S);
+
+rRedlighttimer(IN := yYellowlighttimer.Q, PT := T#5S);
+
+gGreenlight := NOT gGreenlighttimer.Q AND gGreenlighttimer.IN;
+
+yYellowlight := NOT yYellowlighttimer.Q AND yYellowlighttimer.IN;
+
+rRedLight := NOT rRedlighttimer.Q AND rRedlighttimer.IN;
+]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="12" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="33" Count="1" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
