@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="MAIN" Id="{bf6dad08-16ad-4349-8180-27d77fd387e0}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	//Numbered variables for temperature and state
+	nTankTemp :REAL := 25.0; 
+	nState :INT := 10;
+	
+	//BOOL and Timer variables here
+	bHeaterON :BOOL := FALSE;
+	tSensorTimer :TON;
+	IN: INT;
+	PT: INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//Sensor made to set a timer on the loop to loop once every second.
+tSensorTimer(IN:= NOT tSensorTimer.Q, PT:= T#1S);
+
+//Introduction of a case state that has a different outcome for every integer
+CASE nState OF
+	10: //This is the start-up state
+		bHeaterON := FALSE;
+		IF nTankTemp < 40.0 THEN
+			nState := 20;
+			ELSE
+				nState := 30;
+		END_IF;
+	20: //This is the heating-up state
+		bHeaterON := TRUE;
+		
+		// Natural heating process limited by timer
+		IF tSensorTimer.Q THEN
+			nTankTemp := nTankTemp + 0.5;
+		END_IF;
+		
+		//Detector to see if heat reaches a certain level
+		IF nTankTemp > 60.0 THEN
+			nState := 30;
+		END_IF;
+	
+	30: //Cooling State
+		bHeaterON := FALSE;
+		
+		//Natural process
+		IF tSensorTimer.Q THEN
+			nTankTemp := nTankTemp - 1;
+		END_IF;
+		
+		//Sensor to switch state if temperature gets too low
+		IF nTankTemp < 40.0 THEN
+			nState := 20;
+		END_IF;
+END_CASE]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="40" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="81" Count="0" />
+      <LineId Id="38" Count="0" />
+      <LineId Id="35" Count="1" />
+      <LineId Id="41" Count="2" />
+      <LineId Id="45" Count="1" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="50" Count="0" />
+      <LineId Id="53" Count="0" />
+      <LineId Id="74" Count="0" />
+      <LineId Id="54" Count="2" />
+      <LineId Id="60" Count="0" />
+      <LineId Id="75" Count="0" />
+      <LineId Id="61" Count="2" />
+      <LineId Id="57" Count="1" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="76" Count="1" />
+      <LineId Id="66" Count="2" />
+      <LineId Id="78" Count="1" />
+      <LineId Id="71" Count="2" />
+      <LineId Id="37" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
